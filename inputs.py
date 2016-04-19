@@ -36,14 +36,19 @@ Aloop_def = { 'SRC': [138,158],
           'ABL': [140,160],
           'DDR1': [181,201]}
 
+print 'KER hydrogen bond definitions:'
+print KER_hbond
+print 'Activation loop definitions :'
+print Aloop_def
+
 # Here we store these dictionaries as JSON files.
 
 import json
 with open('projects.json', 'w') as fp:
     json.dump(projects, fp)
 with open('DFG.json', 'w') as fp:
-    json.dump(KER_hbond , fp)
-with open('KER_hbond .json', 'w') as fp:
-    json.dump(projects, fp)
+    json.dump(DFG, fp)
+with open('KER_hbond.json', 'w') as fp:
+    json.dump(KER_hbond, fp)
 with open('Aloop_def.json', 'w') as fp:
     json.dump(Aloop_def, fp)
