@@ -6,8 +6,27 @@ projects = dict()
 
 projects['ABL'] = 11400
 projects['SRC'] = 11401
+projects['DDR1'] = 11402
+projects['DDR1-pro'] = 11403
 projects['CK2'] = 11406
 projects['SYK'] = 11407
+
+projects['SRC-ss-NVT'] = 10467
+projects['ABL-ss-NVT'] = 10468
+projects['EGFR-ss-NVT'] = 10469
+
+projects['SRC-ss'] = 10471
+projects['ABL-ss'] = 10472
+projects['EGFR-ss'] = 10473
+
+projects['DDR1-1s'] = 10484
+projects['SYK-3s'] = 10485
+projects['CK2-1s'] = 10486
+projects['HER2-2s'] = 10487
+projects['MEK-4s'] = 10488
+
+#mTOR not included
+#AURKA not included
 
 # This dictionary defines which dihedrals define the DFG flip for each protein. Hopefully this will eventually
 # be defined programmatically rather than by hand.
