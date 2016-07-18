@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 
 import mdtraj as md
 import seaborn as sns
@@ -19,31 +21,51 @@ from glob import glob
 
 protein = 'SRC'
 
-#trajectory = md.load("run24-clone15.xtc",top="run24-clone15.pdb")
-
-#files = sys.argv[1]
 files = "trajectories/*.h5"
 
 trajectories = dataset.MDTrajDataset(files)
 
-### THE FIRST COUPLE PLOTS ARE ONLY CONDUCTED ON THE LONGEST SIM.
-[max_length] = [max(len(traj) for traj in trajectories)]
+### LETS FIND OUT SOME THINGS ABOUT ALL OF OUR TRAJECTORIES.
+print "This script is analyzing %s simulations." % len(trajectories)
+sim_num = len(trajectories)
 
-for traj in trajectories:
-    if len(traj) == max_length:
-        longest_traj=traj
+lens = []
+max_length = 0
+for i,traj in enumerate(trajectories):
+       if len(traj) > max_length:
+          max_length = len(traj)
+       if len(traj) == max_length:
+          longest_traj=traj
+       print i
+       lens.append(len(traj))
 
 frame = np.arange(len(longest_traj))[:, np.newaxis]
 
-# Using 0.25 so that units are in ns.
 time = frame * longest_traj.timestep*1e-3
 
-sim_time = time[-1] * 1e-3
+all_frames = sum(lens)
 
-print "This script is analyzing %s simulations." % len(trajectories)   
-print "The longest simulation is %s us." % ''.join(map(str, sim_time)) 
+total_time = all_frames * longest_traj.timestep*1e-3
+
+sim_time = time[-1] * 1e-3
+total_sim_time = total_time* 1e-3
+
+print "Totalling %s us." %  total_sim_time
+print "The longest simulation is %s us." % ''.join(map(str, sim_time))
+
+plt.hist(lens,bins=50);
+plt.xlabel('Trajectory length')
+plt.ylabel('Occurrences')
+plt.title('Distribution of trajectory lengths (frames)')
+
+plt.tight_layout()
+plt.savefig('traj_distribution.png')
+
+### THE FIRST COUPLE PLOTS ARE ONLY CONDUCTED ON THE LONGEST SIM.
 
 ### RMSD PLOT
+
+plt.clf()
 
 rmsd = md.rmsd(longest_traj,longest_traj,frame=0)
 plt.plot(time, rmsd)
@@ -134,74 +156,7 @@ plt.title('%s sims' % (protein) )
 
 plt.savefig('shukla.png' )
 
+#make PDF summary
 
-### Inspired by http://stackoverflow.com/questions/8085520/generating-pdf-latex-with-python-script
-### Make PDF Summary
-#####
-import argparse
-import os
-import subprocess
+kinalysis.pdf_summary(protein,sim_num,total_sim_time,sim_time)
 
-content = r'''\documentclass{article}
-\usepackage[pdftex]{graphicx}
-\usepackage[margin=0.65in]{geometry}
-\usepackage{caption}
-\usepackage{subcaption}
-\renewcommand{\familydefault}{\sfdefault}
-\begin{document}
-\textbf{\huge PDF Summary of %(protein)s kinase \\}
-\\
-
-\begin{figure}[!hbp]
- \begin{subfigure}[b]{0.4\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{rmsd.png}
-  \caption{RMSD from initial}
-  \label{fig:sub1}
- \end{subfigure}
-\hfill
- \begin{subfigure}[b]{0.4\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{dssp.png}
-  \caption{Secondary Structure}
-  \label{fig:sub2}
- \end{subfigure}
-\caption{Length of the longest sim is %(time)s us.}
-\label{fig:longest_sim}
-\end{figure}
-
-\noindent\rule{16cm}{0.4pt}
-\begin{figure}[h]
- \centering
- \includegraphics[width=7cm]{dihedral.png}
- \caption{DFG dihedral histogram of all sims}
-\end{figure}
-\begin{figure}[h]
- \centering
- \includegraphics[width=7cm]{shukla.png}
- \caption{Shukla plot: KDE of all sims}
-\end{figure}
-\end{document}
-'''
-
-parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--time', default='%s' % ''.join(map(str, sim_time)) )
-parser.add_argument('-p', '--protein', default='%s' %protein) 
-parser.add_argument('-s', '--school', default='My U')
-
-args = parser.parse_args()
-
-with open('pdf_summary.tex','w') as f:
-    f.write(content%args.__dict__)
-
-cmd = ['pdflatex', '-interaction', 'nonstopmode', 'pdf_summary.tex']
-proc = subprocess.Popen(cmd)
-proc.communicate()
-
-retcode = proc.returncode
-if not retcode == 0:
-    os.unlink('pdf_summary.pdf')
-    raise ValueError('Error {} executing command: {}'.format(retcode, ' '.join(cmd))) 
-
-os.unlink('pdf_summary.tex')
-os.unlink('pdf_summary.log')
