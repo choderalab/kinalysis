@@ -31,6 +31,8 @@ projects['MEK-4s'] = 10488
 # This dictionary defines which dihedrals define the DFG flip for each protein. Hopefully this will eventually
 # be defined programmatically rather than by hand.
 
+# DFG dihedral defined here according to Lin..Roux, PNAS (2013) umbrella sampling paper and are AlaCbeta, AlaCalpha, AspCalpha, AspCgamma
+
 DFG = dict()
 
 DFG['ABL'] = [2257,2255,2265,2270]
@@ -48,12 +50,16 @@ print DFG
 # Define hydrogen bond coordinates (0-indexed)
 KER_hbond = { 'SRC' : [[28,43],[43,142]],
               'ABL' : [[29,44],[44,144]],
-              'DDR1': [[51,68],[68,185]]}
+              'DDR1': [[51,68],[68,185]],
+              'CK2': [[66,79],[79,178]],
+              'SYK': [[38,56],[56,153]]}
 
 # Define Activation loop (resid)
 Aloop_def = { 'SRC': [138,158],
           'ABL': [140,160],
-          'DDR1': [181,201]}
+          'DDR1': [181,201],
+          'CK2': [174,194],
+          'SYK': [149,169]}
 
 print 'KER hydrogen bond definitions:'
 print KER_hbond
