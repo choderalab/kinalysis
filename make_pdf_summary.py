@@ -6,6 +6,7 @@ import seaborn as sns
 import numpy as np
 
 import sys
+import os
 
 from msmbuilder import dataset 
 ####
@@ -18,10 +19,40 @@ import kinalysis
 import json
 
 from glob import glob
+import argparse
 
-protein = 'SRC'
+# Define argparse stuff
 
-files = "trajectories/*.h5"
+parser = argparse.ArgumentParser(description="""Make initial plots of your kinase simulations:  > python make_summary_pdf.py --proje
+ct 11401""")
+parser.add_argument("--project", help="the FAH project you want to analyze, e.g. 11401", action="store", default=False, type=int)
+parser.add_argument("--byruns", help="use this if you want to add the plots by run", action="store_true", default=False)
+args = parser.parse_args()
+
+with open('projects.json', 'r') as fp:
+    projects = json.load(fp)
+
+if args.project:
+    myproject = args.project
+    protein =  projects.keys()[projects.values().index(myproject)]
+    files = "/cbio/jclab/projects/fah/fah-data/munged3/no-solvent/%s/*.h5" %args.project
+    
+    # make new results folder with project name
+    newpath = "./results/%s/" %args.project
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+    os.chdir(newpath)
+
+    if args.byruns:
+        print "*** kinalysis: analyzing project %s (%s) BY RUNS ***" % (args.project,protein)
+    else:
+        print "*** kinalysis: analyzing project %s (%s) ***" % (args.project,protein)
+else:
+    myproject = 'no project'
+    protein = 'SRC'
+    files = "trajectories/*.h5"
+
+# Define our trajectories
 
 trajectories = dataset.MDTrajDataset(files)
 
@@ -158,5 +189,5 @@ plt.savefig('shukla.png' )
 
 #make PDF summary
 
-kinalysis.pdf_summary(protein,sim_num,total_sim_time,sim_time)
+kinalysis.pdf_summary(protein,sim_num,total_sim_time,sim_time,myproject)
 
