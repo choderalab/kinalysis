@@ -38,10 +38,9 @@ if args.project:
     files = "/cbio/jclab/projects/fah/fah-data/munged3/no-solvent/%s/*.h5" %args.project
     
     # make new results folder with project name
-    newpath = "./results/%s/" %args.project
+    newpath = "./results/%s" %args.project
     if not os.path.exists(newpath):
         os.makedirs(newpath)
-    os.chdir(newpath)
 
     if args.byruns:
         print "*** kinalysis: analyzing project %s (%s) BY RUNS ***" % (args.project,protein)
@@ -51,6 +50,9 @@ else:
     myproject = 'no project'
     protein = 'SRC'
     files = "trajectories/*.h5"
+    newpath = "./results/%s" %protein
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
 
 # Define our trajectories
 
@@ -185,9 +187,29 @@ plt.ylim(-20,20)
 plt.xlim(0,10)
 plt.title('%s sims' % (protein) )
 
-plt.savefig('shukla.png' )
+plt.savefig('shukla.png')
 
 #make PDF summary
 
 kinalysis.pdf_summary(protein,sim_num,total_sim_time,sim_time,myproject)
+
+# Move all files to results folder.
+
+print '***Finished! Now moving...***'
+
+import shutil
+
+for file in glob('*.png'):
+    print "...%s"%file
+    shutil.move(file,newpath)
+
+for file in glob('*.npy'):
+    print "...%s"%file
+    shutil.move(file,newpath)
+
+for file in glob('pdf_summary.*'):
+    print "...%s"%file
+    shutil.move(file,newpath)
+
+print '***to %s!!!***' %newpath
 
