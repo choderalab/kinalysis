@@ -162,6 +162,65 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('dihedral.png')
 
+# DFG BYRUNS PLOT
+# DFG dihedral by runs, finds out whether your sim started in DFG-in or DFG-out and then plots these two DFG histograms on the same plot.
+
+plt.clf()
+
+[dihedral] = kinalysis.DFG_dihedral_byrun(files, DFG[protein])
+
+#Save dihedral
+np.save('dihedral_separate_%s.npy'%protein,dihedral)
+
+# Load dihedral: Abl_dihedral = np.load('dihedral_separate_Abl.npy')
+
+# Calculate dihedral at the first frame of clone0 of each run
+
+path_base = files.split('*')[0]
+clone0_trajectories = dataset.MDTrajDataset("%s/*clone0.h5" % path_base )
+firstframes = [traj[0] for traj in clone0_trajectories]
+[lines] = kinalysis.DFG_dihedral(firstframes, DFG[protein])
+
+# Rotate dihedral so histogram doesn't get cut in figure
+import math
+
+dihedral_rotate = [ np.array( [A-(2*math.pi) if A >= 1.9 else A for A in run ] ) for run in dihedral[0] ]
+line_rotate =  [A-(2*math.pi) if A >= 1.9 else A for A in lines]
+
+# Define which sims start in DFG-in vs DFG-out conformation
+line_rotate = np.asarray(line_rotate)
+
+DFG_in = np.where(line_rotate > -0.5)
+DFG_out = np.where(line_rotate < -0.5)
+
+# Accumulate these in a loop
+dihedral_in = [ dihedral_rotate[index] for index in DFG_in[0] ]
+dihedral_out = [ dihedral_rotate[index] for index in DFG_out[0] ]
+
+dihedral_in_flattened = [val for sublist in dihedral_in for val in sublist]
+dihedral_out_flattened = [val for sublist in dihedral_out for val in sublist]
+
+#Plot just vertical lines at dihedral for first frames
+
+line_rotate_out = np.vstack([ line_rotate[index] for index in DFG_out[0]])
+line_rotate_in = np.vstack([ line_rotate[index] for index in DFG_in[0]])
+
+for i in range(len(line_rotate_in)):
+        plt.axvline(line_rotate_in[i], color="m", ymin=0.95)
+for i in range(len(line_rotate_out)):
+        plt.axvline(line_rotate_out[i], color="r", ymin=0.95)
+
+# Plot histogram with special seaborn sauce
+sns.distplot(dihedral_in_flattened, color="m",label="DFG in (%s) " %len(DFG_in[0]) )
+sns.distplot(dihedral_out_flattened, color="r",label="DFG out (%s) " %len(DFG_out[0]) )
+
+plt.xlabel('Dihedral (radians)')
+plt.ylabel('Occupancy')
+plt.legend()
+
+plt.savefig('%s_DFG_dihedral_inout_lines.png'%protein)
+
+
 ### MAKE SHUKLA PLOT
 
 plt.clf()
@@ -188,6 +247,35 @@ plt.xlim(0,10)
 plt.title('%s sims' % (protein) )
 
 plt.savefig('shukla.png')
+
+### MAKE SHUKLA PLOT BY RUNS
+
+[rmsd_separate,difference_separate] = kinalysis.shukla_coords_byrun(files,KER_hbond[protein],Aloop_def[protein],SRC2)
+
+#save rmsd and difference data
+np.save('rmsd_separate_%s.npy'%protein,rmsd_separate)
+np.save('difference_separate_%s.npy'%protein,difference_separate)
+
+import matplotlib
+colors = matplotlib.cm.hsv(np.linspace(0, 1, len(rmsd_separate)))
+
+for i in range(len(rmsd_separate)):
+    plt.plot(rmsd_separate[i],difference_separate[i],'.',color=colors[i],alpha=0.15,ms=2)
+
+for i in range(len(rmsd_separate)):
+    try:
+        plt.plot(rmsd_separate[i][0],difference_separate[i][0][0],'*',color=colors[i])
+    except:
+        pass
+
+plt.xlabel('RMSD Activation Loop ($\AA$)')
+plt.ylabel('d(E310-R409) - d(K295-E310) ($\AA$)')
+plt.ylim(-20,20)
+plt.xlim(0,10)
+plt.title('%s sims' % (protein) )
+
+plt.savefig('shukla_byrun_%s.png' %protein,dpi=700)
+
 
 #make PDF summary
 
