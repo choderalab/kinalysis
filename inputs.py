@@ -45,7 +45,7 @@ DFG['DDR1-pro'] = [2817,2815,2825,2830]
 DFG['CK2'] = [2895,2893,2912,2917]
 DFG['SYK'] = [2414,2412,2423,2428]
 DFG['MTOR'] = [2860,2858,2877,2882]
-DFG ["FATMTOR"] = [15780, 15778, 15797, 15802]
+DFG ['FATMTOR'] = [15780, 15778, 15797, 15802]
 
 print 'Projects:'
 print projects
@@ -71,8 +71,8 @@ Aloop_def = { 'SRC': [138,158],
           'DDR1-pro': [181,201],
           'CK2': [174,194],
           'SYK': [149,169],
-         'MTOR': [174,197],
-          'FATMTOR': [980,1003]    }
+          'MTOR': [174,197],
+          'FATMTOR': [980,1003]}
 
 print 'KER hydrogen bond definitions:'
 print KER_hbond
