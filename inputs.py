@@ -25,7 +25,10 @@ projects['CK2-1s'] = 10486
 projects['HER2-2s'] = 10487
 projects['MEK-4s'] = 10488
 
-#mTOR not included
+projects['MTOR'] = 10493
+projects['FATMTOR'] = 10494
+
+
 #AURKA not included
 
 # This dictionary defines which dihedrals define the DFG flip for each protein. Hopefully this will eventually
@@ -41,6 +44,8 @@ DFG['DDR1'] = [2817,2815,2825,2830]
 DFG['DDR1-pro'] = [2817,2815,2825,2830]
 DFG['CK2'] = [2895,2893,2912,2917]
 DFG['SYK'] = [2414,2412,2423,2428]
+DFG['MTOR'] = [2860,2858,2877,2882]
+DFG ['FATMTOR'] = [15780, 15778, 15797, 15802]
 
 print 'Projects:'
 print projects
@@ -55,7 +60,9 @@ KER_hbond = { 'SRC' : [[28,43],[43,142]],
               'DDR1': [[51,68],[68,185]],
           'DDR1-pro': [[51,68],[68,185]],
               'CK2': [[66,79],[79,178]],
-              'SYK': [[38,56],[56,153]]}
+              'SYK': [[38,56],[56,153]],
+              'MTOR': [[5,13],[13,248]],
+              'FATMTOR': [[811,819],[819,1054]]}
 
 # Define Activation loop (resid)
 Aloop_def = { 'SRC': [138,158],
@@ -63,7 +70,9 @@ Aloop_def = { 'SRC': [138,158],
           'DDR1': [181,201],
           'DDR1-pro': [181,201],
           'CK2': [174,194],
-          'SYK': [149,169]}
+          'SYK': [149,169],
+          'MTOR': [174,197],
+          'FATMTOR': [980,1003]}
 
 print 'KER hydrogen bond definitions:'
 print KER_hbond
