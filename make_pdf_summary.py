@@ -202,8 +202,15 @@ dihedral_out_flattened = [val for sublist in dihedral_out for val in sublist]
 
 #Plot just vertical lines at dihedral for first frames
 
-line_rotate_out = np.vstack([ line_rotate[index] for index in DFG_out[0]])
-line_rotate_in = np.vstack([ line_rotate[index] for index in DFG_in[0]])
+try:
+    line_rotate_out = np.vstack([ line_rotate[index] for index in DFG_out[0]])
+except:
+    line_rotate_out = []
+
+try:
+    line_rotate_in = np.vstack([ line_rotate[index] for index in DFG_in[0]])
+except:
+    line_rotate_in = []
 
 for i in range(len(line_rotate_in)):
         plt.axvline(line_rotate_in[i], color="m", ymin=0.95)
@@ -211,8 +218,15 @@ for i in range(len(line_rotate_out)):
         plt.axvline(line_rotate_out[i], color="r", ymin=0.95)
 
 # Plot histogram with special seaborn sauce
-sns.distplot(dihedral_in_flattened, color="m",label="DFG in (%s) " %len(DFG_in[0]) )
-sns.distplot(dihedral_out_flattened, color="r",label="DFG out (%s) " %len(DFG_out[0]) )
+try:
+    sns.distplot(dihedral_in_flattened, color="m",label="DFG in (%s) " %len(DFG_in[0]) )
+except:
+    pass
+
+try:
+    sns.distplot(dihedral_out_flattened, color="r",label="DFG out (%s) " %len(DFG_out[0]) )
+except:
+    pass
 
 plt.xlabel('Dihedral (radians)')
 plt.ylabel('Occupancy')
